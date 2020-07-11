@@ -1,73 +1,92 @@
 display.setDefault("magTextureFilter","nearest")
 
-background = display.newImageRect( "assets/background.png", display.viewableContentWidth * 2,display.viewableContentHeight * 2.2)
-background.x = 0
-background.y = 0
+Button = require("core.button")
+Particle = require("core.particle") -- Particle:new(x,y,rotation,image,width,height,velX,velY,speed,lifeTime)
+require("core.fileDataLoader")
+require("core.fileSystem")
 
+math.randomseed( os.time() )
 
-coin = display.newImageRect( "assets/coin.png", 100,100)
-coin.x = display.contentCenterX
-coin.y = display.contentCenterY
-coin.heat = 0
-coins = 0
+--Values
+score = data.score
+upgradeLevel = data.upgradeLevel
+upgradeCost = data.upgradeCost
 
-tapBonus = 1
+--Buttons
+coinButton = Button:new(display.contentCenterX,display.contentCenterY,"assets/coin.png",100,100)
+coinButton.heat = 0
+upgradeButton = Button:new(display.contentCenterX ,display.contentCenterY * 1.8,"assets/upgrade.png",200,50)
 
-upgradeCost = 10
+--Text
+coins       = display.newText(ValueGroup,score,display.contentCenterX + 30, display.contentCenterY / 1.2,100,100)
+upgradeText = display.newText(ValueGroup,upgradeCost,display.contentCenterX,display.contentCenterY * 1.6,100,100)
 
-coinsText = display.newText(coins, display.contentCenterX , display.contentCenterY / 2)
-cost = display.newText(upgradeCost, display.contentCenterX , display.contentCenterY * 1.8)
-upgrade = display.newImageRect( "assets/upgrade.png",200,50 )
-upgrade.x = display.contentCenterX 
-upgrade.y = display.contentCenterY * 2
-function tap( event )
-	if event.phase == "begin" or  event.phase == "ended"  then 
-		coins = coins + tapBonus
-		coinsText.text = coins
-		coin.width = coin.width + 10
-		coin.height = coin.height + 10
-		if coin.heat <= 1 then 
-			coin.heat = coin.heat + 0.01
+--BackGround
+backGround = display.newImageRect( BackGroundGroup, "assets/background.png",display.viewableContentWidth * 2,display.viewableContentHeight * 2.2)
+backGround.x = 0
+backGround.y = 0
+
+function click( event )
+	local phase = event.phase
+	if phase == "ended" then
+		--coinButton.width  = coinButton.width  + 10
+		--coinButton.height = coinButton.height + 10
+		score = score + upgradeLevel
+		coins.text = score
+		if coinButton.heat <= 1.01 then
+			coinButton.heat = coinButton.heat + 0.01
 		end
-		if coin.heat < 0.5 then 
-			coin:setFillColor( 1,1,1,1)
-		else
-			coin:setFillColor( coin.heat, 0.5,0.5, 1 )
-		end
-	else
-		coin.width = 100
-		coin.height = 100
+		save("score = "..score.."\nupgradeLevel = "..upgradeLevel.."\nupgradeCost = "..upgradeCost)
+	else 
+		coinButton.width  = 100
+		coinButton.height = 100
 	end
 end
 
-function upgradee( event )
-	if (event.phase == "begin" or event.phase == "ended" ) and coins >= upgradeCost then
-		tapBonus = tapBonus + 1
-		coins = coins - upgradeCost
-		coinsText.text = coins
-		upgradeCost = math.floor( upgradeCost * 1.35 )
-		cost.text = upgradeCost
-		upgrade.width = upgrade.width + 10
-		upgrade.height = upgrade.height + 10
+function upgrade( event )
+	local phase = event.phase
+	if phase == "ended" and score >= upgradeCost  then
+		score = score - upgradeCost
+		upgradeCost = math.floor(upgradeCost * 1.3)
+		upgradeButton.width  = upgradeButton.width  + 10
+		upgradeButton.height = upgradeButton.height + 10
+		upgradeLevel = upgradeLevel + 1
+		upgradeText.text = upgradeCost
+		coins.text = score
+		save("score = "..score.."\nupgradeLevel = "..upgradeLevel.."\nupgradeCost = "..upgradeCost)
 	else
-		upgrade.width = 200
-		upgrade.height = 50
+		upgradeButton.width  = 200
+		upgradeButton.height = 50
 	end
 end
 
 function update()
-	if coin.heat > 0 then
-		coin.heat = coin.heat - 0.001
-	end
-	if coin.heat < 0.3 then 
-		coin:setFillColor( 1,1,1,1)
+	Particle:update()
+	if coinButton.heat >= 0.5 then
+		coinButton:setFillColor(coinButton.heat , 0.5 - coinButton.heat / 10, 0.5 - coinButton.heat / 10, 1 )
 	else
-		coin:setFillColor( coin.heat, 0.5, 0.5, 1 )
+		coinButton:setFillColor( 1, 1, 1, 1 )
+	end
+
+	if coinButton.heat >= 1 then
+		heat = true
+	end
+
+	if heat then
+		local rand = math.random( 25, 100 )
+		local speedRand = math.random( 1,3 )
+		Particle:new(math.random(0,display.viewableContentWidth),-100,0,"assets/cool.png",rand,rand,0,10,speedRand,math.random(1,3))
+		coinButton:removeEventListener("touch", coinButton.func)
+		coinButton.heat = coinButton.heat - 0.001
+
+		if coinButton.heat <= 0.5 then
+			coinButton.heat = 0
+			heat = false
+			coinButton:addEventListener("touch", coinButton.func)
+		end
 	end
 end
 
-
-
-timer.performWithDelay( 10,update , 0)
-coin:addEventListener( "touch", tap )
-upgrade:addEventListener( "touch", upgradee )
+timer.performWithDelay(10,update,0)
+upgradeButton.newFunction(upgrade)
+coinButton.newFunction(click)
