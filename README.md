@@ -7,3 +7,6 @@ Clicker on coronaSdk
 - transfer this folder in corona app
 
 - File >> Build >> choose OC
+
+# Licence
+- CC BY-NC
