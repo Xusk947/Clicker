@@ -8,9 +8,9 @@ require("core.fileSystem")
 math.randomseed( os.time() )
 
 --Values
-score = data.score
-upgradeLevel = data.upgradeLevel
-upgradeCost = data.upgradeCost
+score = data.score or 0
+upgradeLevel = data.upgradeLevel or 1
+upgradeCost = data.upgradeCost or 10
 
 --Buttons
 coinButton = Button:new(display.contentCenterX,display.contentCenterY,"assets/coin.png",100,100)
