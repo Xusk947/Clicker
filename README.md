@@ -1,5 +1,5 @@
 # Clicker
-Clicker on coronaSdk
+- Clicker on coronaSdk
 
 # Build
 - download corona sdk
