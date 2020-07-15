@@ -1,5 +1,7 @@
 BackGroundGroup = display.newGroup()
+BackParticleGroup = display.newGroup()
 ButtonGroup = display.newGroup()
+UiGroup = display.newGroup()
 ParticleGroup = display.newGroup()
 ValueGroup = display.newGroup()
 MainGroup = display.newGroup()

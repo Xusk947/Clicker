@@ -10,6 +10,15 @@ function Button:new(x, y, image, width, height, func)
   -- run function when click on button Rect
   button.func = func or function() end
 
+  function button.newLine(image, width, height)
+  button.line = display.newImageRect(ButtonGroup,image,width,height)
+  button.line.x = button.x
+  button.line.y = button.y
+
+  return line 
+
+  end
+
   function button.newFunction(func)
   	button:removeEventListener("touch", button.func)
   	button.func = func

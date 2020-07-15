@@ -15,4 +15,12 @@ if file ~= nil then
 	for value in string.gmatch(file, "upgradeCost =%s*(%d+)") do 
 		data.upgradeCost = tonumber(value)
 	end
+
+	for value in string.gmatch(file, "lvlLevel =%s*(%d+)") do 
+		data.lvlLevel = tonumber(value)
+	end
+
+	for value in string.gmatch(file, "lvlClick =%s*(%d+)") do 
+		data.lvlClick = tonumber(value)
+	end
 end

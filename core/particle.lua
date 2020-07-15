@@ -3,17 +3,20 @@ require("core.displayGroup")
 local Particle = {}
 parts = {}
 
-function Particle:new(x,y,rotation,image,width,height,velX,velY,speed,rotationSpeed,lifeTime)
-	local particle = display.newImageRect( ParticleGroup,image, width, height )
-	particle.x = x
-	particle.y = y
-	particle.rotation = rotation
-	particle.velX = velX
-	particle.velY = velY
-	particle.speed = speed
-	particle.rotationSpeed = rotationSpeed
-	particle.lifeTime = lifeTime or 100
-	table.insert( parts, particle )
+function Particle:new(x,y,rotation,image,width,height,velX,velY,speed,rotationSpeed,lifeTime,group)
+	if #parts <= 250 then
+		local particle = display.newImageRect( group or ParticleGroup,image, width, height )
+		particle.x = x
+		particle.y = y
+		particle.rotation = rotation
+		particle.velX = velX
+		particle.velY = velY
+		particle.speed = speed
+		particle.rotationSpeed = rotationSpeed
+		particle.lifeTime = lifeTime or 100
+		table.insert( parts, particle )
+		return particle
+	end
 end
 
 function Particle:update()
